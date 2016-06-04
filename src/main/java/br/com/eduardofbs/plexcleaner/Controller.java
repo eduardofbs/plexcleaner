@@ -1,8 +1,10 @@
 package br.com.eduardofbs.plexcleaner;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -103,6 +105,33 @@ public class Controller {
 		
 	}
 	
+	public static List<Video> listWatched(String authenticationToken, String key, String type) throws ClientProtocolException, IOException, JAXBException {
+		
+		HttpClient client = HttpClientBuilder.create().build();
+
+		String url = String.format("http://%s:%s/library/sections/%s/all?unwatched=0", DEFAULT_HOST, DEFAULT_PORT, key);
+		
+		if (type.equalsIgnoreCase("show")) {
+			url += "&type=4";
+		}
+		
+		HttpGet listLibraries = new HttpGet(url);
+
+		listLibraries.addHeader("X-Plex-Token", authenticationToken);
+
+		HttpResponse execute = client.execute(listLibraries);
+
+		JAXBContext jaxbContext = JAXBContext.newInstance(MediaContainer.class);
+		Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+		
+		MediaContainer mediaContainer = (MediaContainer) unmarshaller.unmarshal(execute.getEntity().getContent());
+		
+		List<Video> videos = mediaContainer.getVideos();
+		
+		return videos;
+		
+	}
+	
 	public static List<Video> listWatched(String authenticationToken, String host, String port, String key, String type) throws ClientProtocolException, IOException, JAXBException {
 		
 		HttpClient client = HttpClientBuilder.create().build();
@@ -127,6 +156,29 @@ public class Controller {
 		List<Video> videos = mediaContainer.getVideos();
 		
 		return videos;
+		
+	}
+
+	public static void eraseFiles(List<String> filesToErase) throws IOException {
+		
+		String test = System.getProperty("test", "false");
+		
+		boolean isTest = Boolean.parseBoolean(test);
+		
+		if (filesToErase != null && !filesToErase.isEmpty()) {
+			
+			for (String filePath : filesToErase) {
+				
+				File file = new File(filePath);
+				
+				if (!isTest) {
+					Files.deleteIfExists(file.toPath());
+					System.out.println(String.format("File %s erased", file));
+				}
+				
+			}
+			
+		}
 		
 	}
 

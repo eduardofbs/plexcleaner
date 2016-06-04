@@ -3,6 +3,7 @@ package br.com.eduardofbs.plexcleaner;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.bind.JAXBException;
@@ -29,15 +30,9 @@ public class Main {
 		System.out.println("Enter your Plex password");
 		String password = br.readLine();
 
-		System.out.println("Enter your Plex Media Server hostname/ip");
-		String host = br.readLine();
-
-		System.out.println("Enter your Plex Media Server port");
-		String port = br.readLine();
-
 		String authenticationToken = Controller.getAuthorizationToken(login, password);
 
-		List<Directory> libraries = Controller.listLibraries(authenticationToken, host, port);
+		List<Directory> libraries = Controller.listLibraries(authenticationToken);
 
 		System.out.println("Found libraries:");
 
@@ -52,26 +47,30 @@ public class Main {
 			String key = library.getKey();
 			String type = library.getType();
 
-			List<Video> videos = Controller.listWatched(authenticationToken, host, port, key, type);
+			List<Video> videos = Controller.listWatched(authenticationToken, key, type);
 
 			if (videos != null) {
+				
+				List<String> filesToErase = new ArrayList<String>();
 
+				System.out.println(String.format("All these files will be erased"));
+				
 				for (Video video : videos) {
 					Media media = video.getMedia();
 
 					Part part = media.getPart();
 
 					String file = part.getFile();
+					filesToErase.add(file);
+				}
+				
+				System.out.println(String.format("Continue?"));
+				String answer = br.readLine();
 
-					System.out.println(String.format("Should I erase %s?", file));
-					String answer = br.readLine();
-
-					if (answer.equalsIgnoreCase("Y")) {
-						System.out.println("Erased!");
-					} else {
-						System.out.println("Not Erased!");
-					}
-
+				if (answer.equalsIgnoreCase("Y")) {
+					Controller.eraseFiles(filesToErase);
+				} else {
+					System.out.println("Not Erased!");
 				}
 
 			}
