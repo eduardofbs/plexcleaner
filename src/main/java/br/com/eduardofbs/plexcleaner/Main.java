@@ -61,6 +61,9 @@ public class Main {
 					Part part = media.getPart();
 
 					String file = part.getFile();
+					
+					System.out.println(file);
+					
 					filesToErase.add(file);
 				}
 				
