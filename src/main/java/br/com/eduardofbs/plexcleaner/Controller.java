@@ -136,25 +136,24 @@ public class Controller {
 
 	public static void eraseFiles(List<String> filesToErase) throws IOException {
 		
+		if (filesToErase == null || filesToErase.isEmpty())
+			return;
+
 		String test = System.getProperty("test", "false");
 		
 		boolean isTest = Boolean.parseBoolean(test);
-		
-		if (filesToErase != null && !filesToErase.isEmpty()) {
 			
-			for (String filePath : filesToErase) {
-				
-				File file = new File(filePath);
-				
-				if (!isTest) {
-					Files.deleteIfExists(file.toPath());
-					System.out.println(String.format("File %s erased", file));
-				}
-				
+		for (String filePath : filesToErase) {
+			
+			File file = new File(filePath);
+			
+			if (!isTest) {
+				Files.deleteIfExists(file.toPath());
+				System.out.println(String.format("File %s erased", file));
 			}
 			
 		}
-		
+			
 	}
 
 }
