@@ -50,7 +50,7 @@ public class Main {
 			List<Video> videos = Controller.listWatched(authenticationToken, key, type);
 
 			if (videos == null)
-				return;
+				continue;
 
 			List<String> filesToErase = new ArrayList<>();
 
