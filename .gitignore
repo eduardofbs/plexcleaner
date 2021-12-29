@@ -12,3 +12,13 @@
 hs_err_pid*
 /target/
 dependency-reduced-pom.xml
+
+# Eclipse project files
+
+/.settings/
+/.classpath
+/.project
+
+# JetBrains IDEs
+
+/.idea/
